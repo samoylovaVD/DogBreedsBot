@@ -11,9 +11,9 @@ target/
 *.iws
 *.iml
 *.ipr
-*.xml
 *.properties
 
+/.idea
 resources/
 org.commands/
 
