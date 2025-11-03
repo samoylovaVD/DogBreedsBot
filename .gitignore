@@ -11,14 +11,11 @@ target/
 *.iws
 *.iml
 *.ipr
+*.xml
 *.properties
 
-.idea/
 resources/
 org.commands/
-config/
-
-
 
 ### Eclipse ###
 .apt_generated
