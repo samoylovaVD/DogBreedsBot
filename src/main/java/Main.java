@@ -1,73 +1,61 @@
-import commands.*;
-import models.UserProfile;
+import config.BotConfig;
+import handlers.MessageHandler;
+import handlers.CallbackHandler;
 import services.BreedService;
 import services.QuestionService;
-import java.util.Scanner;
+import services.UserSessionService;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-/**
- * Главный класс приложения - консольный бот для подбора пород собак
- * Это точка входа в программу
- */
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("=== Добро пожаловать в бот для подбора пород собак! ===");
-        System.out.println("Для начала работы введите 'help' чтобы увидеть список команд\n");
+public class Main extends TelegramLongPollingBot {
+    private final MessageHandler messageHandler;
+    private final CallbackHandler callbackHandler;
 
-        // Инициализация компонентов
-        Scanner scanner = new Scanner(System.in);
-        UserProfile userProfile = new UserProfile();
+    public Main(String botToken) {
+        super(botToken);
         BreedService breedService = new BreedService();
-        QuestionService questionService = new QuestionService(userProfile, scanner);
+        UserSessionService sessionService = new UserSessionService();
+        QuestionService questionService = new QuestionService(breedService, sessionService);
+        this.messageHandler = new MessageHandler(breedService, questionService, sessionService);
+        this.callbackHandler = new CallbackHandler(questionService, sessionService);
+    }
 
-        // Создание команд
-        Command helpCommand = new HelpCommand();
-        Command startCommand = new StartCommand(questionService);
-        Command stopCommand = new StopCommand(userProfile, questionService);
-        Command resultCommand = new ResultCommand(breedService, userProfile);
+    @Override
+    public String getBotUsername() {
+        return BotConfig.BOT_USERNAME;
+    }
 
-        boolean running = true;
-
-        // Главный цикл программы
-        while (running) {
-            System.out.print("Введите команду: ");
-            String input = scanner.nextLine().trim().toLowerCase();
-
-            switch (input) {
-                case "help":
-                    helpCommand.execute();
-                    break;
-
-                case "start":
-                    // Проверяем, не активен ли уже тест
-                    if (questionService.isQuestionnaireActive()) {
-                        System.out.println("\nТест уже активен! Завершите его или введите 'stop' для отмены.");
-                    } else {
-                        startCommand.execute();
-                    }
-                    break;
-
-                case "stop":
-                    stopCommand.execute();
-                    break;
-
-                case "result":
-                    resultCommand.execute();
-                    break;
-
-                case "exit":
-                    System.out.println("\nСпасибо за использование нашего бота! До свидания!");
-                    running = false;
-                    break;
-
-                default:
-                    // Если введена неизвестная команда, но тест активен - это нормально
-                    if (!questionService.isQuestionnaireActive()) {
-                        System.out.println("Неизвестная команда. Введите 'help' для списка команд.");
-                    }
-                    break;
+    @Override
+    public void onUpdateReceived(Update update) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            SendMessage response = messageHandler.handleMessage(update.getMessage());
+            try {
+                execute(response);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
             }
         }
+        else if (update.hasCallbackQuery()) {
+            SendMessage response = callbackHandler.handleCallback(update.getCallbackQuery());
+            try {
+                execute(response);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-        scanner.close();
+    public static void main(String[] args) {
+        try {
+            TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+            botsApi.registerBot(new Main(BotConfig.BOT_TOKEN));
+            System.out.println("🐕 Бот для подбора пород собак запущен!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
