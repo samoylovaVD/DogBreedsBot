@@ -1,45 +1,40 @@
 package models;
 
 public class UserProfile {
-    private int activityPreference; // 1-активный, 2-домосед
-    private boolean hasAllergy; // есть ли аллергия
-    private boolean hasChildren; // есть ли дети
-    private String livingSpace; // "apartment" или "house"
-    private String dogRole; // "friend" или "guard"
-    private String dogSize; // "small", "medium", "large"
-    private boolean willingToTrain; // готов дрессировать
-    private boolean needGoodWithAnimals; // должно ладить с животными
-    private int groomingFrequency; // 1-редко, 2-иногда, 3-часто
+    private int activityPreference;
+    private boolean hasAllergy;
+    private boolean hasChildren;
+    private DogSize preferredDogSize;
+    private DogRole preferredDogRole;
+    private String livingSpace;
+    private boolean willingToTrain;
+    private boolean needGoodWithAnimals;
+    private int groomingFrequency;
 
-    // Конструктор по умолчанию
     public UserProfile() {
-        // Инициализируем значения по умолчанию
         reset();
     }
 
-    // Метод для сброса всех ответов
     public void reset() {
         this.activityPreference = 0;
         this.hasAllergy = false;
         this.hasChildren = false;
+        this.preferredDogSize = null;
+        this.preferredDogRole = null;
         this.livingSpace = "";
-        this.dogRole = "";
-        this.dogSize = "";
         this.willingToTrain = false;
         this.needGoodWithAnimals = false;
         this.groomingFrequency = 0;
     }
 
-    // Проверяем, заполнен ли профиль полностью
     public boolean isComplete() {
         return activityPreference != 0 &&
                 livingSpace != null && !livingSpace.isEmpty() &&
-                dogRole != null && !dogRole.isEmpty() &&
-                dogSize != null && !dogSize.isEmpty() &&
+                preferredDogRole != null &&
+                preferredDogSize != null &&
                 groomingFrequency != 0;
     }
 
-    // Геттеры и сеттеры для всех полей
     public int getActivityPreference() { return activityPreference; }
     public void setActivityPreference(int activityPreference) {
         this.activityPreference = activityPreference;
@@ -55,19 +50,19 @@ public class UserProfile {
         this.hasChildren = hasChildren;
     }
 
+    public DogSize getPreferredDogSize() { return preferredDogSize; }
+    public void setPreferredDogSize(DogSize preferredDogSize) {
+        this.preferredDogSize = preferredDogSize;
+    }
+
+    public DogRole getPreferredDogRole() { return preferredDogRole; }
+    public void setPreferredDogRole(DogRole preferredDogRole) {
+        this.preferredDogRole = preferredDogRole;
+    }
+
     public String getLivingSpace() { return livingSpace; }
     public void setLivingSpace(String livingSpace) {
         this.livingSpace = livingSpace;
-    }
-
-    public String getDogRole() { return dogRole; }
-    public void setDogRole(String dogRole) {
-        this.dogRole = dogRole;
-    }
-
-    public String getDogSize() { return dogSize; }
-    public void setDogSize(String dogSize) {
-        this.dogSize = dogSize;
     }
 
     public boolean isWillingToTrain() { return willingToTrain; }
