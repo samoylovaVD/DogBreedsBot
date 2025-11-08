@@ -5,19 +5,30 @@ import services.UserSessionService;
 import keyboards.ReplyKeyboardMaker;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import services.BreedService;
+import services.DogBreed;
+
+
+
 
 public class CallbackHandler {
     private final QuestionService questionService;
     private final UserSessionService sessionService;
+    private final BreedService breedService;
 
-    public CallbackHandler(QuestionService questionService, UserSessionService sessionService) {
+    public CallbackHandler(QuestionService questionService, UserSessionService sessionService, BreedService breedService) {
         this.questionService = questionService;
         this.sessionService = sessionService;
+        this.breedService = breedService;
     }
 
     public SendMessage handleCallback(CallbackQuery callbackQuery) {
         Long userId = callbackQuery.getFrom().getId();
         String callbackData = callbackQuery.getData();
+
+        if (callbackData.startsWith("breed_")){
+            String name = callbackData.substring(6);
+            return detailDog(userId, name);}
 
         SendMessage message = new SendMessage();
         message.setChatId(userId.toString());
@@ -56,4 +67,34 @@ public class CallbackHandler {
                 return message;
         }
     }
+    private SendMessage detailDog(Long userId, String name) {
+            SendMessage message = new SendMessage();
+            message.setChatId(userId.toString());
+            message.setParseMode("Markdown");
+            
+            try {
+            DogBreed detailBreed = breedService.detailDog(name);
+            
+                if (detailBreed != null && detailBreed.getName() != null) {
+                    String info = detInfo(detailBreed);
+                    message.setText(info);
+                }else{
+                    message.setText("Не удалось загрузить информацию о породе " + name + ":(");
+                }
+            }catch(Exception e){
+                message.setText("Произошла ошибка при загрузке информации о породе");
+            }
+              return message;
+    }
+    private String detInfo(DogBreed breed){
+        StringBuilder sb = new StringBuilder();
+        sb.append("^^ ").append(breed.getName()).append("*\n\n"); 
+
+        if (breed.getDescript() != null){
+            sb.append().append(breed.getDescript()).append("*\n\n");
+        }
+        if (breed.getPict())!=null){
+            sb.append(\n [Посмотреть фотки]().(breed.getPict()).append(")");
+        }
+        return sb.toString();}
 }
