@@ -8,13 +8,48 @@ import models.DogRole;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BreedService {
     private List<DogBreed> dogBreeds;
-
+    private Map<String, String> breedUrl;
+    private DogBreedParser dogBreedParser;
+    
     public BreedService() {
         initializeBreeds();
+        initializeBreedUrl();
+        this.dogBreedParser = new DogBreedParser();
     }
+
+    public DogBreed detailDog(String name){
+        String url = fullUrl(name);
+        if (url != null){
+            return dogBreedParser.parseDog(url);}
+        return null;}
+}
+    private void initializeBreedUrl(){
+        breedUrl = new HashMap<>();
+        
+        breedUrl.put("Йоркширский терьер", "yorkshirskiy-terer");
+        breedUrl.put("Чихуахуа", "gladkosherstnyy-chikhuakhua");
+        breedUrl.put("Такса", "taksa-gladkosherstnaya");
+        breedUrl.put("Бульдог", "bulldog");
+        breedUrl.put("Бигль", "bigl");
+        breedUrl.put("Лабрадор-ретривер", "labrador-retriver");
+        breedUrl.put("Немецкая овчарка", "german-shepherd");
+        breedUrl.put("Золотистый ретривер", "zolotistyy-retriver");
+        breedUrl.put("Доберман", "dobermann");}
+    
+    public String getBreedUrl(String name){
+        return breedUrl.get(name);}
+    
+    public String fullUrl(String name){
+        String partUrl = breedUrl.get(name);
+        if (partUrl != null){
+            return "https://www.purina.ru/find-a-pet/dog-breeds/" + partUrl;}
+        return null;}
+
 
     private void initializeBreeds() {
         dogBreeds = new ArrayList<>();
