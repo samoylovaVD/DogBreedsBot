@@ -28,7 +28,7 @@ public class BreedService {
         if (url != null){
             return dogBreedParser.parseDog(url);}
         return null;}
-}
+    
     private void initializeBreedUrl(){
         breedUrl = new HashMap<>();
         
@@ -189,9 +189,11 @@ public class BreedService {
 
             result.append(breedInfo);
         }
-
+        result.append("\n🎯 *Нажмите на кнопку ниже для получения подробной информации*");
+        
         return result.toString();
     }
+    
 
     private String getTrainingDifficultyInRussian(int difficulty) {
         switch (difficulty) {
