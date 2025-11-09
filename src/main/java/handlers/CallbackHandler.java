@@ -6,7 +6,7 @@ import keyboards.ReplyKeyboardMaker;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import services.BreedService;
-import services.DogBreed;
+import parser.DogBreed;
 
 
 
@@ -88,13 +88,13 @@ public class CallbackHandler {
     }
     private String detInfo(DogBreed breed){
         StringBuilder sb = new StringBuilder();
-        sb.append("^^ ").append(breed.getName()).append("*\n\n"); 
+        sb.append("^^ *").append(breed.getName()).append("*\n\n"); 
 
         if (breed.getDescript() != null){
-            sb.append().append(breed.getDescript()).append("*\n\n");
+            sb.append().append(breed.getDescript()).append("\n\n");
         }
         if (breed.getPict())!=null){
-            sb.append(\n [Посмотреть фотки]().(breed.getPict()).append(")");
+            sb.append("\n [Посмотреть фотки](").append(breed.getPict()).append(")");
         }
         return sb.toString();}
 }
