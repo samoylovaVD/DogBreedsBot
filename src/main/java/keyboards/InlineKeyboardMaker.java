@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import java.util.ArrayList;
 import java.util.List;
+import models.DogBreed;
 
 public class InlineKeyboardMaker {
 
@@ -71,4 +72,18 @@ public class InlineKeyboardMaker {
         markup.setKeyboard(keyboard);
         return markup;
     }
+
+    public static InlineKeyboardMarkup breedsBoard(List<DogBreed> breeds){
+        InlineKeyboardMarkup markup= new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        for (DogBreed breed:breeds){
+            List<InlineKeyboardButton> row = new ArrayList<>();
+           InlineKeyboardButton breedButton= new InlineKeyboardButton();
+            breedButton.setText(breed.getName());
+            breedButton.setCallbackData("breed_"+ breed.getName());
+            row.add(breedButton);
+            keyboard.add(row);}
+        markup.setKeyboard(keyboard);
+        return markup;}
 }
