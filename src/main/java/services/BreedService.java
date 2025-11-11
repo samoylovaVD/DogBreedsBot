@@ -1,6 +1,6 @@
 package services;
 
-import parser.DogParser;
+import parser.DogBreedParser;
 import models.DogBreed;
 import models.UserProfile;
 import models.DogSize;
@@ -15,12 +15,12 @@ import java.util.Map;
 public class BreedService {
     private List<DogBreed> dogBreeds;
     private Map<String, String> breedUrl;
-    private DogParser dogParser;
-    
+    private DogBreedParser dogParser;
+
     public BreedService() {
         initializeBreeds();
         initializeBreedUrl();
-        this.dogParser = new DogParser();
+        this.dogParser = new DogBreedParser();
     }
 
     public DogBreed detailDog(String name){
@@ -28,10 +28,10 @@ public class BreedService {
         if (url != null){
             return dogParser.parseDog(url);}
         return null;}
-    
+
     private void initializeBreedUrl(){
         breedUrl = new HashMap<>();
-        
+
         breedUrl.put("Йоркширский терьер", "yorkshirskiy-terer");
         breedUrl.put("Чихуахуа", "gladkosherstnyy-chikhuakhua");
         breedUrl.put("Такса", "taksa-gladkosherstnaya");
@@ -41,10 +41,10 @@ public class BreedService {
         breedUrl.put("Немецкая овчарка", "german-shepherd");
         breedUrl.put("Золотистый ретривер", "zolotistyy-retriver");
         breedUrl.put("Доберман", "dobermann");}
-    
+
     public String getBreedUrl(String name){
         return breedUrl.get(name);}
-    
+
     public String fullUrl(String name){
         String partUrl = breedUrl.get(name);
         if (partUrl != null){
@@ -105,7 +105,7 @@ public class BreedService {
                 .filter(breed -> isBreedSuitable(breed, userProfile))
                 .collect(Collectors.toList());
     }
-    
+
     private boolean isBreedSuitable(DogBreed breed, UserProfile userProfile) {
         if (breed.getSize() != userProfile.getPreferredDogSize()) {
             return false;
@@ -190,10 +190,10 @@ public class BreedService {
             result.append(breedInfo);
         }
         result.append("\n🎯 *Нажмите на кнопку ниже для получения подробной информации*");
-        
+
         return result.toString();
     }
-    
+
 
     private String getTrainingDifficultyInRussian(int difficulty) {
         switch (difficulty) {
